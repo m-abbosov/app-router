@@ -1,6 +1,5 @@
 'use client';
-
-import React, { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 interface Todo {
   userId: number;
@@ -10,14 +9,13 @@ interface Todo {
 }
 
 const CSR = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
-
-  useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/todos')
-      .then((response) => response.json())
-      .then((data) => setTodos(data));
-  }, []);
-
+  const { data: todos = [] } = useQuery({
+    queryKey: ['todos'],
+    queryFn: async (): Promise<Todo[]> => {
+      const res = await fetch('https://jsonplaceholder.typicode.com/todos');
+      return res.json();
+    },
+  });
   return (
     <div>
       <h1>CSR Todos</h1>
